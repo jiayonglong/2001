@@ -4,6 +4,11 @@
 
     <center><h1>商品品牌添加</h1></center><hr/>
     <form action="{{url('/brand/store')}}" method="POST" class="form-horizontal" role="form" enctype="multipart/form-data">
+        @if (session('msg'))
+            <div class="alert alert-success">
+                {{ session('msg') }}
+            </div>
+        @endif
         {{csrf_field()}}
         <div class="form-group">
             <label for="firstname" class="col-sm-2 control-label">品牌名称</label>

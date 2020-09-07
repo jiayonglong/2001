@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Model\Brand;
+use Validator;
+use App\Http\Requests\StoreBlogPost;
 class BrandController extends Controller
 {
     /**
@@ -44,17 +46,19 @@ class BrandController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreBlogPost $request)
     {
-//        $validatedData = $request->validate([
-//            'brand_name' => 'required|unique:brand',
-//            'brand_name' => 'required',
-//        ],[
-//            'brand_name.required'=>'用户名不能为空',
-//            'brand_name.unique'=>'用户名不能为空',
-//
-//        ]);
         $post = $request->except('_token');
+        $validator = Validator::make($post,[
+            'brand_name'=>'required|unique:brand|max:20',
+            'brand_url'=>'required',
+        ],[
+            'brand_name.required'=>'品牌名称必填',
+            'brand_name.unique'=>'品牌名称已存在',
+            'brand_name.max'=>'品牌名称最大长度不超20',
+            'brand_url.required'=>'品牌网址必填',
+        ]);
+
         $res = Brand::insert($post);
         if($res){
             return redirect('/brand/index');
@@ -81,7 +85,7 @@ class BrandController extends Controller
     public function edit($id)
     {
         $brand = Brand::where('brand_id',$id)->first();
-        return view('brand.edit',['brand'=>$brand]);
+        return view('admin.brand.edit',['brand'=>$brand]);
     }
 
     /**
@@ -93,7 +97,13 @@ class BrandController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        //接受所有值
+        $post = $request->except('_token');
+        // dd($post);
+        $res = Brand::where('brand_id',$id)->update($post);
+        if($res!==false){
+            return redirect('/brand/index');
+        }
     }
 
     /**
@@ -104,6 +114,14 @@ class BrandController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $res = Brand::where('brand_id',$id)->delete();
+
+        if($res){
+            if(request()->ajax()){
+                return json_encode(['error_no'=>'1','error_msg'=>'删除成功']);
+            }
+            return redirect('brand/index');
+        }
+
     }
 }

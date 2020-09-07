@@ -28,8 +28,8 @@
                 <td>{{$v->brand_url}}</td>
                 <td><img src="{{$v->brand_logo}}" width="50"></td>
                 <th>{{$v->brand_desc}}</th>
-                <th><a href="{{url('/brand/edit/'.$v->brand_id)}}" id="{{$v->brand_id}}" type="button" class="btn btn-danger">删除</a>
-                <a href="javascript:void(0);" id="{{$v->brand_id}}" type="button" class="btn btn-danger">编辑</a></th>
+                <th><a href="{{url('/brand/edit/'.$v->brand_id)}}" id="{{$v->brand_id}}" type="button" class="btn btn-dange">编辑</a>
+                <a href="javascript:void(0);" id="{{$v->brand_id}}" type="button" class="btn btn-danger">删除</a></th>
             </tr>
         @endforeach
 
@@ -42,4 +42,19 @@
         </td>
     </tr>
 </div>
+    <script>
+        //ajax删除
+        $('.btn-danger').click(function(){
+            var id = $(this).attr('id');
+            var isdel = confirm('确定删除吗?');
+            if(isdel == true){
+                $.get('/brand/destroy/'+id,function(rest){
+                    if(rest.error_no == '1'){
+                        location.reload();
+                    }
+                },'json');
+            }
+
+        });
+    </script>
 @endsection
