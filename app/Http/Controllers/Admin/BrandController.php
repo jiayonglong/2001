@@ -16,9 +16,25 @@ class BrandController extends Controller
      */
     public function index()
     {
+        $brand_name = request()->brand_name;
+//        dd($brand_name);
+        $where=[];
+        if ($brand_name){
+            $where[] = ['brand_name','like','%brand_name%'];
+        }
+        $brand_url = request()->brand_url;
+//        dd($brand_url);
+        $where=[];
+        if ($brand_url){
+            $where[] = ['brand_url','like','%brand_url%'];
+        }
         $bran = new Brand();
-        $brand = $bran->paginate(3);
-        return view('admin.brand.index',['brand'=>$brand]);
+        $brand = $bran::where($where)->orderby('brand_id','desc')->paginate(3);
+        $query = request()->all();
+        if(request()->ajax()){
+            return view('admin.brand.ajax',['brand'=>$brand,'query'=>$query]);
+        }
+        return view('admin.brand.index',['brand'=>$brand,'query'=>$query]);
     }
     public function uploads(request $request){
 
@@ -112,9 +128,17 @@ class BrandController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($ids=0)
     {
-        $res = Brand::where('brand_id',$id)->delete();
+        $ids = request()->all();
+//        dd($ids);
+        if(!$ids){
+            return;
+        }
+        foreach ($ids as $v=>$k){
+//            dd($k);
+            $res = Brand::destroy($k);
+        }
 
         if($res){
             if(request()->ajax()){

@@ -55,8 +55,9 @@
     <script src="/layui/layui.js"></script>
     <script src="/layui/layui.all.js"></script>
     <script>
-        layui.use('element', function() {
+        layui.use(['element','form'], function() {
             var element = layui.element;
+            var form = layui.form;
                 });
         layui.use('upload', function(){
             var $ = layui.jquery
