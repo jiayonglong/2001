@@ -28,7 +28,7 @@
                 <td><input type="checkbox" name="checkboxtwo" class="layui-unselect layui-form-checkbox layui-form-checked" lay-skin="primary" value="{{$v->brand_id}}">
                     </td>
                 <td>{{$v->brand_id}}</td>
-                <td>{{$v->brand_name}}</td>
+                <td id="{{$v->brand_id}}"><span class="aww">{{$v->brand_name}}</span></td>
                 <td>{{$v->brand_url}}</td>
                 <td><img src="{{$v->brand_logo}}" width="50"></td>
                 <th>{{$v->brand_desc}}</th>
@@ -47,6 +47,33 @@
     </table>
 </div>
     <script>
+        //即点即改
+        $(document).on('click','.aww',function (){
+            // alert(111);
+            var brand_name = $(this).text();
+            var id = $(this).parent().attr('id');
+           $(this).parent().html('<input type="text" name="input_name" class="changname input_name"  value='+brand_name+'>');
+           $('.input_name_'+id).val('').focus().val(brand_name);
+        });
+        $(document).on('blur','.changname',function (){
+            // alert(111);
+            var newname = $(this).val();
+            // alert(newname);
+            var id = $(this).parent().attr('id');
+            var obj = $(this);
+            // console.log(newname);
+            $.get('/brand/chang',{id,id,brand_name:newname},function(rest){
+                console.log(rest);
+                if(rest.code==0){
+                    alert(rest.msg);
+                    obj.parent().html('<span class="aww">'+newname+'</span>');
+                }else{
+                    alert(222);
+                }
+            },'json');
+            return false;
+        })
+
         //全选
         $(document).on('click','.layui-form-checkbox:eq(0)',function (){
             var checkedval = $('input[name="checkboxone"]').prop('checked');
@@ -56,7 +83,8 @@
                 $('input[name="checkboxtwo"]').prop('checked',false);
             }
         });
-        $('.mordel').click(function (){
+        $(document).on('click','.mordel',function (){
+        // $('.mordel').click(function (){
             // alert(111);
             var ids = new Array();
             $('input[name="checkboxtwo"]:checked').each(function (i,k){

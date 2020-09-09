@@ -142,9 +142,28 @@ class BrandController extends Controller
 
         if($res){
             if(request()->ajax()){
-                return json_encode(['error_no'=>'1','error_msg'=>'删除成功']);
+                return $this->error('删除成功');
+//                return json_encode(['error_no'=>'1','error_msg'=>'删除成功']);
             }
             return redirect('brand/index');
+        }
+
+    }
+    public function chang(Request $request){
+        $brand_name = $request->brand_name;
+        $id = $request->id;
+//        dd($brand_name);
+//        dd($id);
+        if(!$brand_name || !$id){
+            return $this->error('参数缺失');
+        }
+        $res= Brand::where('brand_id',$id)->update(['brand_name'=>$brand_name]);
+//        dd($res);
+        if($res==1){
+            return $this->error('修改成功');
+//            return json_encode(['error_no'=>1,'error_msg'=>'修改成功']);
+        }else{
+            return $this->error('修改失败');
         }
 
     }
